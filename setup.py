@@ -1,8 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
+import datetime
 import os
 import platform
+import shlex
 import subprocess
+import sys
 
 import sipconfig
 
@@ -17,6 +21,40 @@ from sipdistutils import build_ext
 
 from PyQt5.QtCore import PYQT_CONFIGURATION
 from PyQt5.QtCore import QLibraryInfo
+
+
+def get_git_build_number():
+    TAG = "UNKNOWN"
+    exe_extension = ".exe" if (sys.platform == "win32") else ""
+    exe_name = "git{0}".format(exe_extension)
+
+    TAG = DISTANCE = COMMIT = DATE = MODIFIED = None
+
+    command = shlex.split(u"{0} describe --tags --always".format(exe_name))
+    pipe = subprocess.run(command, stdout=subprocess.PIPE, check=True, shell=False)
+    for line in pipe.stdout.split(b'\n'):
+        parts = line.strip().split(b'-')
+        COMMIT = parts[-1].replace(b'g', b'').decode('utf8')
+        DISTANCE = int(parts[-2])
+        TAG = b'-'.join(parts[:-2]).decode('utf8')
+        break
+
+    command = shlex.split(u"{0} status --porcelain -uno".format(exe_name))
+    pipe = subprocess.run(command, stdout=subprocess.PIPE, check=True, shell=False)
+    MODIFIED = True if len(pipe.stdout) else False
+
+    command = shlex.split(u"{0} show -s --format=%cI".format(exe_name))
+    pipe = subprocess.run(command, stdout=subprocess.PIPE, check=True, shell=False)
+    for line in pipe.stdout.split(b'\n'):
+        line = line.strip().decode('ascii')
+        # Something like '2019-06-20T09:04:10+02:00'
+        # Python 3.5 %z strptime format does not like the ':' in TZ
+        date_part, tz_part = line.split('+')
+        line = '+'.join((date_part, tz_part.replace(':', '')))
+        DATE = datetime.datetime.strptime(line, "%Y-%m-%dT%H:%M:%S%z")
+        break
+
+    return TAG, DISTANCE, COMMIT, DATE, MODIFIED
 
 # monkey-patch for parallel compilation, see
 # https://stackoverflow.com/questions/11013851/speeding-up-build-process-with-distutils
@@ -164,9 +202,19 @@ class MyBuilderExt(build_ext):
         cfg = sipconfig.Configuration()
         return join(cfg.default_sip_dir, 'PyQt5')
 
+
+TAG, DISTANCE, COMMIT, DATE, MODIFIED = get_git_build_number()
+
+if not DISTANCE:
+    # We're on a tag, good
+    version = TAG
+else:
+    # Revert to year.month.dev{distance}+{commit}
+    version = "{0.year}.{0.month}.dev{1}+{2}".format(DATE, DISTANCE, COMMIT)
+
 setup(
     name='QCustomPlot',
-    version='2.0.3',
+    version=version,
     description='QCustomPlot is a PyQt5 widget for plotting and data visualization',
     author='Dmitry Voronin, Giuseppe Corbelli',
     author_email='carriingfate92@yandex.ru',
