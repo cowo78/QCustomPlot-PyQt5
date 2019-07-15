@@ -10,15 +10,19 @@
 # QCustomPlot Website/Contact: http://www.qcustomplot.com
 
 import math
+import sys
 
-from PyQt5.QtCore import QTimer, QPointF, Qt
-from PyQt5.QtGui import QPen, QBrush, QColor, QRadialGradient, QLinearGradient
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtCore import QTimer, QPointF, Qt, pyqtSlot, QTime, qrand
+from PyQt5.QtGui import QPen, QBrush, QColor, QRadialGradient, QLinearGradient, QFont
+from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5.uic import loadUi
 
 import QCustomPlot
 
 from QCustomPlot import QCP
+
+# Just a reasonable value
+RAND_MAX = 2**31 - 1
 
 class MainWindow(QMainWindow):
     def __init__(self, argv, parent=None):
@@ -36,7 +40,7 @@ class MainWindow(QMainWindow):
 #             7: self.setupTextureBrushDemo,
 #             8: self.setupMultiAxisDemo,
 #             9: self.setupLogarithmicDemo,
-#             10: self.setupRealtimeDataDemo,
+            10: self.setupRealtimeDataDemo,
             11: self.setupParametricCurveDemo,
             12: self.setupBarChartDemo,
 #             13: self.setupStatisticalDemo,
@@ -50,6 +54,12 @@ class MainWindow(QMainWindow):
 
         self.currentDemoIndex = -1
         self.demoName = ""
+        self.dataTimer = QTimer()
+        # Used in setupRealtimeDataDemo
+        self.startTime = None
+        self.lastPointKey = 0.0
+        self.lastFpsKey = 0.0
+        self.frameCount = 0
         self.setGeometry(400, 250, 542, 390)
         try:
             demoIndex = int(argv[-1])
@@ -132,7 +142,72 @@ class MainWindow(QMainWindow):
 #   void setupTextureBrushDemo(QCustomPlot *customPlot);
 #   void setupMultiAxisDemo(QCustomPlot *customPlot);
 #   void setupLogarithmicDemo(QCustomPlot *customPlot);
-#   void setupRealtimeDataDemo(QCustomPlot *customPlot);
+    def setupRealtimeDataDemo(self):
+        self.demoName = "Real Time Data Demo"
+
+        # include this section to fully disable antialiasing for higher performance:
+        self.customPlot.setNotAntialiasedElements(QCustomPlot.QCP.aeAll)
+        font = QFont()
+        font.setStyleStrategy(QFont.NoAntialias)
+        self.customPlot.xAxis.setTickLabelFont(font)
+        self.customPlot.yAxis.setTickLabelFont(font)
+        self.customPlot.legend.setFont(font)
+
+        self.customPlot.addGraph()  # blue line
+        self.customPlot.graph(0).setPen(QPen(QColor(40, 110, 255)))
+        self.customPlot.addGraph()  # red line
+        self.customPlot.graph(1).setPen(QPen(QColor(255, 110, 40)))
+
+        timeTicker = QCustomPlot.QCPAxisTickerTime()
+        timeTicker.setTimeFormat("%h:%m:%s");
+        self.customPlot.xAxis.setTicker(timeTicker)
+        self.customPlot.axisRect().setupFullAxesBox()
+        self.customPlot.yAxis.setRange(-1.2, 1.2)
+
+        # make left and bottom axes transfer their ranges to right and top axes:
+        self.customPlot.xAxis.rangeChanged.connect(self.customPlot.xAxis2.setRange)
+        self.customPlot.yAxis.rangeChanged.connect(self.customPlot.yAxis2.setRange)
+
+        # setup a timer that repeatedly calls MainWindow::realtimeDataSlot:
+        self.dataTimer.timeout.connect(self.realtimeDataSlot)
+        self.startTime = QTime.currentTime()
+        self.lastPointKey = 0.0
+        self.dataTimer.start(0)  # Interval 0 means to refresh as fast as possible
+
+    @pyqtSlot()
+    def realtimeDataSlot(self):
+        # calculate two new data points:
+        key = self.startTime.elapsed()/1000.0  # time elapsed since start of demo, in seconds
+        if (key - self.lastPointKey) > 0.002:  # at most add point every 2 ms
+            # add data to lines:
+            self.customPlot.graph(0).addData(
+                key,
+                math.sin(key) + (qrand() / RAND_MAX * math.sin(key / 0.3843))
+            )
+            self.customPlot.graph(1).addData(
+                key,
+                math.cos(key) + (qrand() / RAND_MAX * 0.5 * math.sin(key / 0.4364))
+            )
+            # rescale value (vertical) axis to fit the current data:
+            # self.customPlot.graph(0).rescaleValueAxis()
+            # self.customPlot.graph(1).rescaleValueAxis(True)
+            self.lastPointKey = key
+
+        # make key axis range scroll with the data (at a constant range size of 8):
+        self.customPlot.xAxis.setRange(key, 8, Qt.AlignRight);
+        self.customPlot.replot()
+
+        # calculate frames per second:
+        self.frameCount += 1
+        if (key- self.lastFpsKey) > 2:  # average fps over 2 seconds
+            self.statusBar.showMessage(
+                "{:.2f} FPS, Total Data points: {}".format(
+                    self.frameCount / (key - self.lastFpsKey),
+                    self.customPlot.graph(0).size() + self.customPlot.graph(1).size()
+                )
+            )
+            self.lastFpsKey = key
+            self.frameCount = 0
 
     def setupParametricCurveDemo(self):
         self.demoName = "Parametric Curves Demo"
@@ -274,3 +349,15 @@ class MainWindow(QMainWindow):
 #   void setupFinancialDemo(QCustomPlot *customPlot);
 #
 #   void setupPlayground(QCustomPlot *customPlot);
+
+
+def main():
+    app = QApplication(sys.argv)
+    # First argument can be a number that specifies loaded example
+    w = MainWindow(sys.argv)
+    w.show()
+    return app.exec_()
+
+
+if __name__ == '__main__':
+    sys.exit(main())
