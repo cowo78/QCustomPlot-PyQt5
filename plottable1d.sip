@@ -32,12 +32,12 @@ class QCPAbstractPlottable1D : public QCPAbstractPlottable, public QCPPlottableI
 {
 %TypeHeaderCode
 #include <QCustomPlot/src/qcp.h>
-#include "helper.h"
+#include "plottable1d_helper.h"
 %End
 public:
   QCPAbstractPlottable1D(QCPAxis *keyAxis, QCPAxis *valueAxis);
   virtual ~QCPAbstractPlottable1D();
-  
+
   // virtual methods of 1d plottable interface:
   virtual int dataCount() const;
   virtual double dataMainKey(int index) const;
@@ -49,7 +49,7 @@ public:
   virtual QCPDataSelection selectTestRect(const QRectF &rect, bool onlySelectable) const;
   virtual int findBegin(double sortKey, bool expandedRange=true) const;
   virtual int findEnd(double sortKey, bool expandedRange=true) const;
-  
+
   // reimplemented virtual methods:
   virtual double selectTest(const QPointF &pos, bool onlySelectable, QVariant *details=0) const;
   virtual QCPPlottableInterface1D *interface1D();
