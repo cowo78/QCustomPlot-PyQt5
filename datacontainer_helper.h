@@ -1,0 +1,13 @@
+#if !defined(__QCUSTOMPLOT_SIP_DATACONTAINER_HELPER)
+#define __QCUSTOMPLOT_SIP_DATACONTAINER_HELPER
+
+typedef QCPDataContainer<QCPCurveData> QCPCurveDataContainer;
+typedef QCPDataContainerIterator<QCPCurveData> QCPCurveDataContainerIterator;
+
+typedef QCPDataContainer<QCPBarsData> QCPBarsDataContainer;
+typedef QCPDataContainerIterator<QCPBarsData> QCPBarsDataContainerIterator;
+
+typedef QCPDataContainer<QCPGraphData> QCPGraphDataContainer;
+typedef QCPDataContainerIterator<QCPGraphData> QCPGraphDataContainerIterator;
+
+#endif  // __QCUSTOMPLOT_SIP_DATACONTAINER_HELPER
