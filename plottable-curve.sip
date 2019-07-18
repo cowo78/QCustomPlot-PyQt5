@@ -29,9 +29,20 @@ public:
   double t;
   double key;
   double value;
+
+  // Not present in C++
+  bool operator==(const QCPCurveData &other) const;
+%MethodCode
+    // Not the best equality check, admitted
+    sipRes = (sipCpp->t == a0->t) && (sipCpp->key && a0->key) && (sipCpp->value == a0->value);
+%End
 };
 
+
 typedef QCPAbstractPlottable1D<QCPCurveData> QCPAbstractPlottable1D_QCPCurveData;
+typedef QCPDataContainer<QCPCurveData> QCPCurveDataContainer;
+typedef QCPDataContainerIterator<QCPCurveData> QCPCurveDataContainerIterator;
+
 
 class QCPCurve : public QCPAbstractPlottable1D_QCPCurveData
 {
@@ -50,8 +61,10 @@ public:
   virtual ~QCPCurve();
 
   // getters:
-  // TODO: provide methodcode
-  // QSharedPointer<QCPCurveDataContainer> data() const { return mDataContainer; }
+  QCPCurveDataContainer *data();
+%MethodCode
+    sipRes = sipCpp->data().get();
+%End
   QCPScatterStyle scatterStyle() const;
   int scatterSkip() const;
   LineStyle lineStyle() const;

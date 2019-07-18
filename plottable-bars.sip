@@ -68,6 +68,9 @@ public:
 
 
 typedef QCPAbstractPlottable1D<QCPBarsData> QCPAbstractPlottable1D_QCPBarsData;
+typedef QCPDataContainer<QCPBarsData> QCPBarsDataContainer;
+typedef QCPDataContainerIterator<QCPBarsData> QCPBarsDataContainerIterator;
+
 
 class QCPBars : public QCPAbstractPlottable1D_QCPBarsData
 {
@@ -95,8 +98,10 @@ public:
   double stackingGap() const;
   QCPBars *barBelow() const;
   QCPBars *barAbove() const;
-  // TODO: provide methodcode
-  // QSharedPointer<QCPBarsDataContainer> data() const;
+  QCPBarsDataContainer *data();
+%MethodCode
+    sipRes = sipCpp->data().get();
+%End
 
   // setters:
   // TODO: provide methodcode

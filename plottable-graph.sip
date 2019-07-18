@@ -32,6 +32,9 @@ public:
 
 
 typedef QCPAbstractPlottable1D<QCPGraphData> QCPAbstractPlottable1D_QCPGraphData;
+typedef QCPDataContainer<QCPGraphData> QCPGraphDataContainer;
+typedef QCPDataContainerIterator<QCPGraphData> QCPGraphDataContainerIterator;
+
 
 class QCPGraph : public QCPAbstractPlottable1D_QCPGraphData
 {
@@ -54,8 +57,10 @@ public:
   virtual ~QCPGraph();
 
   // getters:
-  // TODO: provide methodcode
-  // QSharedPointer<QCPGraphDataContainer> data() const;
+  QCPGraphDataContainer *data();
+%MethodCode
+    sipRes = sipCpp->data().get();
+%End
   LineStyle lineStyle() const;
   QCPScatterStyle scatterStyle() const;
   int scatterSkip() const;
