@@ -35,7 +35,7 @@ QCustomPlot Website/Contact: http://www.qcustomplot.com
 //#include "axis/axistickerlog.h"
 %Include axis.sip
 %Include scatterstyle.sip
-//%Include datacontainer.sip
+%Include datacontainer.sip
 %Include plottable.sip
 %Include item.sip
 %Include core.sip
@@ -62,3 +62,4 @@ QCustomPlot Website/Contact: http://www.qcustomplot.com
 //#include "items/item-pixmap.h"
 //#include "items/item-tracer.h"
 //#include "items/item-bracket.h"
+
