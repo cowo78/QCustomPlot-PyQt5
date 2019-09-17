@@ -193,6 +193,8 @@ class MyBuilderExt(build_ext):
         ]
 
         if WINDOWS_HOST:
+            qcustomplot_ext.extra_compile_args.append("/Zi")
+            qcustomplot_ext.extra_link_args.append("/DEBUG:FULL")
             qcustomplot_ext.library_dirs.append(join(self.build_temp, 'release'))
             qcustomplot_ext.libraries.append('Opengl32')
 
