@@ -100,7 +100,8 @@ public:
   QCPBars *barAbove() const;
   QCPBarsDataContainer *data();
 %MethodCode
-    sipRes = sipCpp->data().get();
+    // QSharedPointer::get was introduced in Qt 5.11
+    sipRes = sipCpp->data().data();
 %End
 
   // setters:

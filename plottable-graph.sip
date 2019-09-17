@@ -59,7 +59,7 @@ public:
   // getters:
   QCPGraphDataContainer *data();
 %MethodCode
-    sipRes = sipCpp->data().get();
+    sipRes = sipCpp->data().data();
 %End
   LineStyle lineStyle() const;
   QCPScatterStyle scatterStyle() const;
