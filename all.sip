@@ -53,7 +53,7 @@ QCustomPlot Website/Contact: http://www.qcustomplot.com
 //#include "plottables/plottable-colormap.h"
 //#include "plottables/plottable-financial.h"
 //#include "plottables/plottable-errorbar.h"
-//#include "items/item-straightline.h"
+%Include item-straightline.sip
 //#include "items/item-line.h"
 //#include "items/item-curve.h"
 //#include "items/item-rect.h"
