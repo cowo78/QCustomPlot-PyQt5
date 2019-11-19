@@ -53,7 +53,7 @@ public:
                    ,lsImpulse    ///< each data point is represented by a line parallel to the value axis, which reaches from the data point to the zero-value-line
                  };
 
-  explicit QCPGraph(QCPAxis *keyAxis, QCPAxis *valueAxis);
+  explicit QCPGraph(QCPAxis *keyAxis, QCPAxis *valueAxis) /Transfer/;
   virtual ~QCPGraph();
 
   // getters:
@@ -68,8 +68,10 @@ public:
   bool adaptiveSampling() const;
 
   // setters:
-  // TODO: provide methodcode
-  // void setData(QSharedPointer<QCPGraphDataContainer> data);
+  void setData(QCPGraphDataContainer* data);
+%MethodCode
+    sipCpp->setData(QSharedPointer<QCPGraphDataContainer>(a0));
+%End
   void setData(const QVector<double> &keys, const QVector<double> &values, bool alreadySorted=false);
   void setLineStyle(LineStyle ls);
   void setScatterStyle(const QCPScatterStyle &style);
