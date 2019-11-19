@@ -108,7 +108,10 @@ public:
   double size() const;
   TracerStyle style() const;
   QCPGraph *graph() const;
+  QCPCurve *curve() const;
   double graphKey() const;
+  double curveKey() const;
+  double curveOrder() const;
   bool interpolating() const;
 
   // setters;
@@ -120,6 +123,13 @@ public:
   void setStyle(TracerStyle style);
   void setGraph(QCPGraph *graph);
   void setGraphKey(double key);
+  void setCurve(QCPCurve *curve);
+  void setCurveKey(double key);
+%MethodCode
+    sipCpp->setCurveKey(a0, std::numeric_limits<double>::quiet_NaN());
+%End
+  void setCurveKey(double key, double order);
+  void setCurveOrder(double order);
   void setInterpolating(bool enabled);
 
   // reimplemented virtual methods:
