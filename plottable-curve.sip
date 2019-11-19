@@ -70,8 +70,10 @@ public:
   LineStyle lineStyle() const;
 
   // setters:
-  // TODO: provide methodcode
-  // void setData(QSharedPointer<QCPCurveDataContainer> data);
+  void setData(QCPCurveDataContainer* data);
+%MethodCode
+    sipCpp->setData(QSharedPointer<QCPCurveDataContainer>(a0));
+%End
   void setData(const QVector<double> &t, const QVector<double> &keys, const QVector<double> &values, bool alreadySorted=false);
   void setData(const QVector<double> &keys, const QVector<double> &values);
   void setScatterStyle(const QCPScatterStyle &style);
