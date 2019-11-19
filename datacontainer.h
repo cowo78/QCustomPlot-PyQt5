@@ -27,6 +27,11 @@ public:
         return (m_Iter == m_pContainer->end()) ? nullptr : &(*m_Iter);
     }
 
+    typename QCPDataContainer<T>::iterator iterator() const noexcept
+    {
+        return m_Iter;
+    }
+
 protected:
     QCPDataContainer<T> *m_pContainer;
     typename QCPDataContainer<T>::iterator m_Iter;

@@ -43,7 +43,7 @@ public:
   void sort();
   void squeeze(bool preAllocation=true, bool postAllocation=true);
 
-  QCPDataContainerIterator<_TYPE_> *iter()  /PyName=__iter__,Factory/;
+  QCPDataContainerIterator<_TYPE_> *__iter__()  /Factory/;
 %MethodCode
     // Here we don't need the template, SIP is automatically expanding the definition
     sipRes = new QCPDataContainerIterator(sipCpp);
@@ -69,15 +69,14 @@ public:
   // This is not how the Python iterators work
   // const_iterator findEnd(double sortKey, bool expandedRange=true) const;
 
-  QCPDataContainerIterator<_TYPE_> *at(int index);
+  QCPDataContainerIterator<_TYPE_> *at(int index)  /Factory/;
 %Docstring(format="deindented", signature="appended")
-    Returns a the element with the specified index.
+    Returns an iterator to the element with the specified index.
     If index points beyond the available elements in this container, returns None.
-
-    Iterator on the container is positioned on the returned item.
 %End
 %MethodCode
-    sipRes = new QCPDataContainerIterator(sipCpp, sipCpp->at(a0));
+    QCPDataContainer::const_iterator itr = sipCpp->at(a0);
+    sipRes = (itr == sipCpp->constEnd()) ? NULL : new QCPDataContainerIterator(sipCpp, itr);
 %End
 
   QCPRange keyRange(bool &foundRange, QCP::SignDomain signDomain=QCP::sdBoth);
@@ -100,14 +99,19 @@ class QCPDataContainerIterator
 public:
   QCPDataContainerIterator(QCPDataContainer<_TYPE_> *container);
 
+  _TYPE_ *get();
+%Docstring(format="deindented", signature="appended")
+    Returns iterator current data point or None if iterator is invalid
+%End
+
   // The iterator is iterable, so that we can call i.e. findBegin() on the
   // container and iterate over the result
-  QCPDataContainerIterator<_TYPE_> *iter()  /PyName=__iter__/;
+  QCPDataContainerIterator<_TYPE_> *__iter__();
 %MethodCode
     sipRes = sipCpp;
 %End
 
-  _TYPE_ *next()  /PyName=__next__/;
+  _TYPE_ *__next__();
 %MethodCode
     sipRes = sipCpp->next();
     if (!sipRes) {
@@ -116,8 +120,15 @@ public:
     }
 %End
 
-  _TYPE_ *get();
-%Docstring(format="deindented", signature="appended")
-    Returns iterator current data point or None if iterator is invalid
+  /* We discard consts here for simplicity. */
+  bool __eq__(QCPDataContainerIterator* other);
+%MethodCode
+    sipRes = sipCpp->iterator() == a0->iterator();
 %End
+
+  bool __ne__(QCPDataContainerIterator* other);
+%MethodCode
+  sipRes = sipCpp->iterator() != a0->iterator();
+%End
+
 };
