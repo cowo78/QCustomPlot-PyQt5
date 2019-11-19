@@ -136,6 +136,7 @@ public:
   QPixmap toPixmap(int width=0, int height=0, double scale=1.0);
   void toPainter(QCPPainter *painter, int width=0, int height=0);
   Q_SLOT void replot(QCustomPlot::RefreshPriority refreshPriority=QCustomPlot::rpRefreshHint);
+  double replotTime(bool average=false) const;
 
   QCPAxis *xAxis;
   QCPAxis *yAxis;
