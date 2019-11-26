@@ -111,6 +111,7 @@ public:
   QCPCurve *curve() const;
   double graphKey() const;
   double curveKey() const;
+  double curveValue() const;
   double curveOrder() const;
   bool interpolating() const;
 
