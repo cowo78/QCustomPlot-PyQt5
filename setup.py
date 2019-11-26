@@ -153,7 +153,7 @@ class MyBuilderExt(build_ext):
         print('Make static qcustomplot library...')
         self.spawn([self.qmake, join(ROOT, 'QCustomPlot/src/qcp-staticlib.pro')])
         # AFAIK only nmake does not support -j option
-        has_multiprocess = not(WINDOWS_HOST and "nmake"in self.make)
+        has_multiprocess = not(WINDOWS_HOST and "nmake" in self.make)
         make_cmdline = [self.make]
         if has_multiprocess:
             make_cmdline.extend(('-j', str(os.cpu_count())))
@@ -185,11 +185,13 @@ class MyBuilderExt(build_ext):
         ]
 
         qcustomplot_ext.libraries = [
+            'qcustomplot',
             'Qt5Core',
             'Qt5Gui',
             'Qt5Widgets',
-            'Qt5PrintSupport',
-            'qcustomplot'
+            # For some unknown reason GCC 9.2.1 20191102 on Debian does not link Qt5PrintSupport
+            # if -lqcustomplot comes in last
+            'Qt5PrintSupport'
         ]
 
         if WINDOWS_HOST:
