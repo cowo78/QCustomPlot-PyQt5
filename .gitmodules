@@ -1,4 +1,4 @@
 [submodule "QCustomPlot"]
 	path = QCustomPlot
     url = https://gitlab.com/Corbelli/QCustomPlot.git
-    branch = repaint_all
+    branch = curve_item_tracer
