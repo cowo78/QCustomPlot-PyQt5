@@ -121,3 +121,5 @@ signals:
   void selectionChanged(QCPLegend::SelectableParts parts);
   void selectableChanged(QCPLegend::SelectableParts parts);
 };
+
+QFlags<QCPLegend::SelectablePart> operator|(QCPLegend::SelectablePart f1, QFlags<QCPLegend::SelectablePart> f2);
