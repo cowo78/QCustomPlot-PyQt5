@@ -195,3 +195,6 @@ signals:
   void selectionChanged(const QCPAxis::SelectableParts &parts);
   void selectableChanged(const QCPAxis::SelectableParts &parts);
 };
+
+QFlags<QCPAxis::AxisType> operator|(QCPAxis::AxisType f1, QFlags<QCPAxis::AxisType> f2);
+QFlags<QCPAxis::SelectablePart> operator|(QCPAxis::SelectablePart f1, QFlags<QCPAxis::SelectablePart> f2);
